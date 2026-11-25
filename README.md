@@ -213,10 +213,12 @@ For the viva, moving the box down is one number: change the line marked `START R
 
 **Prerequisites:** Python 3.8 or newer, a JDK, and the official
 [nand2tetris tools](https://www.nand2tetris.org/software) (extracted, with their
-`projects/` folder).
+`projects/` folder). Step-by-step setup for a laptop, plus the viva demo script, is in
+[VIVA.md](VIVA.md).
 
 ```bash
-sh tests/run_tests.sh /path/to/nand2tetris/tools
+python tests/run_tests.py --tools /path/to/nand2tetris/tools   # any OS
+sh tests/run_tests.sh /path/to/nand2tetris/tools               # macOS / Linux shell
 ```
 
 The script runs, in order:
