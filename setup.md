@@ -1,4 +1,4 @@
-# Running everything on your laptop (viva setup)
+# Running everything on your laptop
 
 Everything below is done once, before the viva. Fifteen minutes if the tools are not
 installed yet, three minutes if they are.
