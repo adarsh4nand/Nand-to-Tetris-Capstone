@@ -23,7 +23,7 @@ byte with the official assembler.
 
 ```
 .
-├── hdl/                    The Hack computer, built from Nand up (31 chips)
+├── hdl/                    The Hack computer (top-level integration)
 │   ├── Computer.hdl        ROM32K + CPU + Memory
 │   ├── CPU.hdl             A/D registers, ALU control, jump logic, program counter
 │   ├── Memory.hdl          RAM16K / Screen / Keyboard address decoding
@@ -51,10 +51,7 @@ byte with the official assembler.
 
 ## 2. Part A — the Hack computer
 
-The machine is built bottom-up the way the course builds it: 31 HDL files starting at Nand
-and ending at Computer. Projects 1–3 (gates, ALU, registers, RAM, program counter) are used
-by the three chips of project 5, so the hierarchy is consistent end to end rather than a
-mixture of student and built-in parts.
+The machine integrates the CPU, memory, and ROM into a complete Hack computer. As permitted by the project brief, the sub-components (ALU, registers, RAM, gates) use the simulator's built-in implementations, while the top-level integration (CPU, Memory, Computer) is implemented in custom HDL.
 
 **CPU.hdl.** The CPU holds the A and D registers, the ALU and the program counter, and
 decodes the 16 instruction bits directly. Two details decide whether it works:
@@ -91,8 +88,7 @@ counter feeds the ROM address, the instruction word feeds the CPU, and `outM`, `
 | `CPU.tst` | instruction decoding, ALU control, jumps |
 | `ComputerAdd.tst`, `ComputerMax.tst`, `ComputerRect.tst` | the whole machine running real programs |
 
-**Built-in chips used:** `ARegister`, `DRegister`, `ROM32K`, `Screen` and `Keyboard`, which
-the course supplies as built-ins.
+**Built-in chips used:** `ARegister`, `DRegister`, `ROM32K`, `Screen`, `Keyboard`, as well as the ALU, RAM, and gate chips, which are standard built-ins for Project 5.
 
 > **Note on the three Computer tests.** Their output lines read the internal state of
 > `RAM16K` and `PC` (`RAM16K[0]`, `PC[]`). The standard simulator reports those values only
