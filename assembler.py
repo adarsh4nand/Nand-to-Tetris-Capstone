@@ -80,7 +80,12 @@ def strip_comments(text):
 
     Kept 1:1 with the original file so error messages can name the real line.
     """
-    text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
+    text = re.sub(
+        r"/\*.*?\*/",
+        lambda m: "\n" * m.group(0).count("\n"),
+        text,
+        flags=re.S,
+    )
     lines = []
     for raw in text.splitlines():
         line = raw.split("//", 1)[0]
@@ -241,7 +246,8 @@ def assemble_file(path, output_path=None, symbols_path=None, k=None):
 
     print("  %d instructions -> %s" % (len(words), output_path))
 
-    # Extra feature for K mod 3 == 0 (also useful for the other two)
+    # Extra feature for K mod 3 == 0 (K = 93 -> 93 mod 3 = 0):
+    # save all labels and variables with their addresses in symbols.txt by default.
     if symbols_path:
         variable_names = {name for name, _ in variables}
         labels = [(n, a) for n, a in symbols.items()
@@ -270,29 +276,34 @@ def main(argv=None):
     )
     parser.add_argument("files", nargs="+", help="assembly files to translate")
     parser.add_argument("-o", "--output", help="output file (only with a single input)")
-    parser.add_argument("-s", "--symbols", help="write the symbol table to this file")
-    parser.add_argument("--k", type=int, help="your personal number K (selects the extra feature)")
+    parser.add_argument("-s", "--symbols", help="write the symbol table to this file (default: symbols.txt)")
+    parser.add_argument("--no-symbols", action="store_true", help="do not write symbols.txt")
+    parser.add_argument("--k", type=int, default=93, help="your personal number K (default: 93)")
     args = parser.parse_args(argv)
 
     if args.output and len(args.files) > 1:
         parser.error("-o/--output can only be used with one input file")
 
-    if args.k is not None:
-        features = {
-            0: "save every label and variable in symbols.txt",
-            1: "print a clear error message with the line number",
-            2: "warn when the same label is written twice",
-        }
-        print("K = %d  ->  K mod 3 = %d  ->  extra feature: %s"
-              % (args.k, args.k % 3, features[args.k % 3]))
+    features = {
+        0: "save every label and variable in symbols.txt",
+        1: "print a clear error message with the line number",
+        2: "warn when the same label is written twice",
+    }
+    print("K = %d  ->  K mod 3 = %d  ->  extra feature: %s"
+          % (args.k, args.k % 3, features[args.k % 3]))
 
     exit_code = 0
     for path in args.files:
         try:
+            out_path = args.output if args.output else os.path.splitext(path)[0] + ".hack"
+            sym_path = args.symbols
+            if sym_path is None and not args.no_symbols and (args.k % 3 == 0):
+                out_dir = os.path.dirname(out_path)
+                sym_path = os.path.join(out_dir, "symbols.txt") if out_dir else "symbols.txt"
             written = assemble_file(
                 path,
                 output_path=args.output,
-                symbols_path=args.symbols,
+                symbols_path=sym_path,
                 k=args.k,
             )
             if written is None:

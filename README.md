@@ -1,7 +1,7 @@
 # Nand to Tetris Capstone — A Working Hack Computer, Assembler and Box Program
 
-Nand to Tetris – I (ETCNTC301) · School of Engineering & Technology
-Adarsh Anand — **K = 93** (last two digits of roll number 2501730393)
+Nand to Tetris – I (ETCCNT301 / ETCNTC301) · School of Engineering & Technology, K.R. Mangalam University  
+Adarsh Anand (Roll No. **2501730393**) — **K = 93**
 
 A complete, from-scratch implementation of the Hack platform: the computer itself in
 hardware description language, a two-pass assembler written in Python, and a Hack assembly
@@ -11,10 +11,13 @@ byte with the official assembler.
 
 | | |
 |---|---|
-| **Course** | Nand to Tetris – I (ETCNTC301) |
+| **Course** | Nand to Tetris – I (ETCCNT301) |
+| **Student / Roll No.** | Adarsh Anand / 2501730393 |
 | **Personal number** | K = 93 |
-| **Box** | 20 rows starting at row 93, 32 pixels wide, from the left edge |
-| **Extra assembler feature** | K mod 3 = 0 → symbol table written to `symbols.txt` |
+| **Box** | 20 rows starting at row 93, 32 pixels wide (2 words/row), from the left edge |
+| **Extra assembler feature** | K mod 3 = 0 → symbol table written automatically to `symbols.txt` |
+| **Report** | `Nand_to_Tetris_Capstone_Report_Adarsh_Anand.pdf` (4 pages with embedded screenshots) |
+| **Submission folder** | `capstone/` (all HDL files, `assembler.py`, `Box.asm`, `Box.hack`, `symbols.txt`, `test_programs/`, `screenshots/`) |
 | **Verification** | 38 automated checks, all passing |
 
 ---
@@ -23,35 +26,45 @@ byte with the official assembler.
 
 ```
 .
-├── hdl/                    The Hack computer (top-level integration)
-│   ├── Computer.hdl        ROM32K + CPU + Memory
+├── capstone/               Complete faculty submission folder (Step 5A)
 │   ├── CPU.hdl             A/D registers, ALU control, jump logic, program counter
 │   ├── Memory.hdl          RAM16K / Screen / Keyboard address decoding
-│   ├── ALU.hdl             project 2 arithmetic logic unit
-│   ├── RAM16K.hdl … RAM8   project 3 memory hierarchy
-│   └── …                   gates, adders, multiplexers, registers
+│   ├── Computer.hdl        ROM32K + CPU + Memory
+│   ├── ALU.hdl … Xor.hdl   All 28 course combinational & sequential chips
+│   ├── assembler.py        Two-pass Hack assembler (standard library only)
+│   ├── Box.asm             The box program for K = 93
+│   ├── Box.hack            Box.asm assembled with assembler.py
+│   ├── symbols.txt         Labels and variables of Box.asm with their addresses
+│   ├── test_programs/      Add.hack, Max.hack, Rect.hack, Pong.hack
+│   └── screenshots/        Official HDL test & CPU Emulator screenshots
 │
+├── hdl/                    Mirror of all HDL chips for the test suite
 ├── assembler.py            Two-pass Hack assembler (standard library only)
 ├── make_box.py             Generates Box.asm for any K and assembles it
 ├── Box.asm                 The box program for K = 93
 ├── Box.hack                Box.asm assembled with assembler.py
 ├── symbols.txt             Labels and variables of Box.asm with their addresses
+├── Nand_to_Tetris_Capstone_Report_Adarsh_Anand.pdf   4-page capstone report
+├── VIVA.md                 5-minute individual viva guide & demo script
 │
 ├── tools/hack_emu.py       Small Hack emulator used to check Box.hack
 ├── tests/
 │   ├── run_tests.sh        One command that re-runs every check
 │   ├── official/           Official .tst/.cmp files, Add/Max/Rect/Pong sources
-│   └── screenshot/         Ready-to-open folders for the four report screenshots
+│   └── screenshot/         Ready-to-open folders for simulator screenshots
 │
-├── screenshots/            Screen dumps of the box and the CPU Emulator
-└── README.md
+└── screenshots/            Raw captured simulator & emulator screen dumps
 ```
 
 ---
 
 ## 2. Part A — the Hack computer
 
-The machine integrates the CPU, memory, and ROM into a complete Hack computer. As permitted by the project brief, the sub-components (ALU, registers, RAM, gates) use the simulator's built-in implementations, while the top-level integration (CPU, Memory, Computer) is implemented in custom HDL.
+The machine integrates the CPU, memory, and ROM into a complete Hack computer. All course
+combinational and sequential chips (`Not` through `ALU`, `Bit`, `Register`, `RAM8`–`RAM16K`,
+`PC`) as well as `CPU.hdl`, `Memory.hdl`, and `Computer.hdl` are implemented in custom HDL.
+Built-in simulator primitives are used for `Nand`, `DFF`, `ARegister`, `DRegister`, `ROM32K`,
+`Screen`, and `Keyboard`.
 
 **CPU.hdl.** The CPU holds the A and D registers, the ALU and the program counter, and
 decodes the 16 instruction bits directly. Two details decide whether it works:
@@ -88,7 +101,7 @@ counter feeds the ROM address, the instruction word feeds the CPU, and `outM`, `
 | `CPU.tst` | instruction decoding, ALU control, jumps |
 | `ComputerAdd.tst`, `ComputerMax.tst`, `ComputerRect.tst` | the whole machine running real programs |
 
-**Built-in chips used:** `ARegister`, `DRegister`, `ROM32K`, `Screen`, `Keyboard`, as well as the ALU, RAM, and gate chips, which are standard built-ins for Project 5.
+**Built-in chips used:** Standard simulator primitives `Nand`, `DFF`, `ARegister`, `DRegister`, `ROM32K`, `Screen`, and `Keyboard` are built-ins. All 28 course chips (`Not` through `RAM16K` and `PC`) are implemented in custom HDL and pass their individual tests.
 
 > **Note on the three Computer tests.** Their output lines read the internal state of
 > `RAM16K` and `PC` (`RAM16K[0]`, `PC[]`). The standard simulator reports those values only
@@ -119,7 +132,7 @@ The symbol table starts with the predefined symbols (`SP`, `LCL`, `ARG`, `THIS`,
 `R0`–`R15`, `SCREEN`, `KBD`) plus the labels from the first pass. New variables are assigned
 `RAM[16]`, `RAM[17]`, `RAM[18]` … in the order they first appear.
 
-**Extra feature for K = 93 (K mod 3 = 0).** Every successful run can write `symbols.txt`:
+**Extra feature for K = 93 (K mod 3 = 0).** Every successful run writes `symbols.txt` automatically:
 the predefined symbols, each label with its ROM address, and each new variable with its RAM
 address. For `Box.asm` that is `BOOT 0`, `MAIN 12`, `PAINT 22`, … and the nine variables
 `startRow 16`, `width 17`, `height 18`, `fill 19`, `addr 20`, `rowsToSkip 21`,
@@ -133,9 +146,8 @@ The other two features from the assignment are implemented as well and left swit
 ### Usage
 
 ```bash
-python3 assembler.py Add.asm Max.asm Rect.asm Pong.asm   # writes .hack files
-python3 assembler.py Box.asm -s symbols.txt              # also saves the symbol table
-python3 assembler.py --k 93 Box.asm                      # shows which feature K selects
+python3 capstone/assembler.py capstone/Box.asm            # writes Box.hack and symbols.txt
+python3 assembler.py Add.asm Max.asm Rect.asm Pong.asm    # writes .hack files
 ```
 
 ### Validation against the official assembler
@@ -186,13 +198,8 @@ forever.
 | After the key is released | screen empty | 0 black pixels |
 | Key pressed again | same box | same box |
 
-![Box drawn at row 93](screenshots/box_pressed.png)
-![Screen after the key is released](screenshots/box_released.png)
-
-`Box.hack` is produced by `assembler.py` from `Box.asm`; the official CPU Emulator
-disassembles it back to the same instructions (`@93`, `D=A`, `@16`, `M=D`, `@2`, …):
-
-![Box.hack loaded in the CPU Emulator](screenshots/cpu_emulator_box_hack_loaded.png)
+![Box drawn at row 93 in CPU Emulator](capstone/screenshots/box_pressed_emulator.png)
+![Screen after the key is released in CPU Emulator](capstone/screenshots/box_released_emulator.png)
 
 Regenerating the program for another K:
 

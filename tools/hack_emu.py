@@ -89,7 +89,7 @@ class Hack:
             do_jump = (
                 (jump == "001" and not negative and not zero) or   # JGT
                 (jump == "010" and zero) or                        # JEQ
-                (jump == "011" and (zero or negative)) or          # JGE
+                (jump == "011" and not negative) or                # JGE
                 (jump == "100" and negative) or                    # JLT
                 (jump == "101" and not zero) or                    # JNE
                 (jump == "110" and (negative or zero)) or          # JLE
