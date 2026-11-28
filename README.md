@@ -1,7 +1,7 @@
 # Nand to Tetris Capstone — Make the Computer Draw a Box
 
 **Course:** Nand to Tetris – I (ETCCNT301 / ETCNTC301) · School of Engineering & Technology, K.R. Mangalam University  
-**Student:** Adarsh Anand · **Roll No.:** `2501730393` · **Personal Number:** `K = 93`
+**Name:** Adarsh Anand · **Roll No.:** `2501730393` · **Personal Number:** `K = 93`
 
 ---
 
